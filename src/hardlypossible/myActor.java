@@ -18,14 +18,14 @@ import java.awt.image.BufferedImage;
  * @author Jordan
  */
 public class myActor implements myPaintable, myIntersectable, myActable {
-    
+
     private myWorld m;
     private double x, y, ys, rotation;
     private int width = 50, height = 50;
-    private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 9.8, ROTATIONSPEED = 0.055, TOP_SCREEN = 100, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 100;
+    private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 8.8, ROTATIONSPEED = 0.055, TOP_SCREEN = 200, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 500;
     private BufferedImage image;
     private boolean dead;
-    
+
     public myActor(myWorld m, double x, double y) {
         this.m = m;
         this.x = x - 3;
@@ -40,14 +40,16 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         g.setColor(new Color(224, 67, 26));
         g.fillRect(1, 1, width - 2, height - 2);
     }
-    
+
     @Override
     public void act() {
-        if (!onGround() && !onBlock() && ys <= MAX_GRAVITY) {
+        if (!onGround() && !onBlock()) {
             /*
              * Not on ground so add gravity and rotation.
              */
-            ys += GRAVITY;
+            if (ys <= MAX_GRAVITY) {
+                ys += GRAVITY;
+            }
             rotation += ROTATIONSPEED;
         } else if (onGround() || onBlock()) {
             /*
@@ -62,7 +64,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         if (m.isKeyDown("space") && (onGround() || onBlock())) {
             ys = -JUMPSTR;
         }
-        
+
         hitSpike();
 
         /*
@@ -175,7 +177,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
          */
         Rectangle2D actor = new Rectangle();
         actor.setRect((int) x, (int) y + 3, width, height);
-        
+
         for (myIntersectable i : myWorld.inIntersectable) {
             /*
              * Loop through world objects and check for those intersectable.
@@ -188,14 +190,14 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                 int[] xP = new int[]{(int) p.getX(), (int) p.getX() + p.getWidth() / 2, (int) p.getX() + p.getWidth()};
                 int[] yP = new int[]{(int) p.getY() + p.getHeight(), (int) p.getY(), (int) p.getY() + p.getHeight()};
                 Polygon other = new Polygon(xP, yP, 3);
-                
+
                 if (other.intersects(actor)) {
                     die();
                 }
             }
         }
     }
-    
+
     @Override
     public BufferedImage paint() {
         return rotate(image, getRotation());
@@ -210,13 +212,13 @@ public class myActor implements myPaintable, myIntersectable, myActable {
      */
     public BufferedImage rotate(BufferedImage timg, double degrees) {
         AffineTransform xform = new AffineTransform();
-        
+
         xform.setToTranslation(0.5 * timg.getWidth(), 0.5 * timg.getHeight());
         xform.rotate(degrees);
         xform.translate(-0.5 * timg.getHeight(), -0.5 * timg.getWidth());
-        
+
         AffineTransformOp op = new AffineTransformOp(xform, AffineTransformOp.TYPE_BILINEAR);
-        
+
         return op.filter(timg, null);
     }
 
@@ -228,37 +230,37 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     private double getRotation() {
         return rotation;
     }
-    
+
     @Override
     public double getX() {
         return x;
     }
-    
+
     @Override
     public double getY() {
         return y;
     }
-    
+
     @Override
     public double getXS() {
         return 0;
     }
-    
+
     @Override
     public double getYS() {
         return ys;
     }
-    
+
     @Override
     public int getWidth() {
         return width;
     }
-    
+
     @Override
     public int getHeight() {
         return height;
     }
-    
+
     private void die() {
         dead = true;
         System.exit(-1);

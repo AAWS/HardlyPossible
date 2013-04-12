@@ -32,7 +32,7 @@ public class myWorld extends Environment {
     public static List<myActable> inActing = new ArrayList<>();
     public static List<myIntersectable> inIntersectable = new ArrayList<>();
     private static Set<String> keysDown = new HashSet<>();
-    public final double SCROLLSPEED = 3.9;
+    public final double SCROLLSPEED = 5.3;
     private final Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
     private SoundThread t;
     public double scrollY;
@@ -76,14 +76,14 @@ public class myWorld extends Environment {
         inPaintable = new ArrayList<>();
         inActing = new ArrayList<>();
         inIntersectable = new ArrayList<>();
-        addObjectToWorld(new myActor(this, 100, 100));
+        addObjectToWorld(new myActor(this, 100, 300));
         for (int x = 0; x < 100 * 50; x += 50) {
             if (x % 800 == 0) {
-                addObjectToWorld(new myGround(100 + x, 250));
+                addObjectToWorld(new myGround(100 + x, 350));
             } else if (x % 600 == 0) {
-                addObjectToWorld(new mySpike(100 + x, 250));
+                addObjectToWorld(new mySpike(100 + x, 350));
             } else {
-                addObjectToWorld(new mySurface(100 + x, 300, true));
+                addObjectToWorld(new mySurface(100 + x, 400, true));
             }
         }
     }
@@ -119,6 +119,9 @@ public class myWorld extends Environment {
             keysDown.add(getKeyText(e.getKeyCode()).toLowerCase());
         } else {
             keysDown.add(getKeyText(e.getKeyCode()));
+        }
+        if(getKeyText(e.getKeyCode()).toLowerCase().equals("escape")) {
+            System.exit(1);
         }
     }
 
