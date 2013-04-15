@@ -39,7 +39,7 @@ public class myWorld extends Environment {
 
     public myWorld(Image background) {
         super(background);
-//        startTimer(0, 10L);
+        startTimer(0, 10L);
     }
 
     public void addObjectToWorld(Object obj) {
@@ -72,20 +72,33 @@ public class myWorld extends Environment {
 
     @Override
     public void initializeEnvironment() {
-        setSound(3);
-        inPaintable = new ArrayList<>();
-        inActing = new ArrayList<>();
-        inIntersectable = new ArrayList<>();
-        addObjectToWorld(new myActor(this, 100, 300));
-        for (int x = 0; x < 100 * 50; x += 50) {
-            if (x % 800 == 0) {
-                addObjectToWorld(new myGround(100 + x, 350));
-            } else if (x % 600 == 0) {
-                addObjectToWorld(new mySpike(100 + x, 350));
-            } else {
-                addObjectToWorld(new mySurface(100 + x, 400, true));
-            }
+        levelManager.initialize(this);
+
+        // Change this to build other levels.
+        levelManager.buildLevelOne();
+    }
+
+    public void setBackground(int background) {
+        Image bg = null;
+        switch (background) {
+            case 1:
+                bg = ResourceTools.loadImageFromResource("resources/images/background.jpg");
+                break;
+            default:
+                try {
+                    bg = ResourceTools.loadImageFromResource("resources/images/background" + background + ".jpg");
+                    break;
+                } catch (Exception e) {
+                    setBackground(1);
+                    return;
+                }
         }
+        if (bg == null) {
+            return;
+        }
+        bg = bg.getScaledInstance(java.awt.Toolkit.getDefaultToolkit().getScreenSize().width, java.awt.Toolkit.getDefaultToolkit().getScreenSize().height, 1);
+        setBackground(bg);
+
     }
 
     @Override
@@ -120,7 +133,7 @@ public class myWorld extends Environment {
         } else {
             keysDown.add(getKeyText(e.getKeyCode()));
         }
-        if(getKeyText(e.getKeyCode()).toLowerCase().equals("escape")) {
+        if (getKeyText(e.getKeyCode()).toLowerCase().equals("escape")) {
             System.exit(1);
         }
     }

@@ -22,7 +22,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     private myWorld m;
     private double x, y, ys, rotation;
     private int width = 50, height = 50;
-    private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 8.8, ROTATIONSPEED = 0.055, TOP_SCREEN = 200, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 500;
+    private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 8.8, ROTATIONSPEED = 0.055, TOP_SCREEN = 650, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 300;
     private BufferedImage image;
     private boolean dead;
 
@@ -30,6 +30,21 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         this.m = m;
         this.x = x - 3;
         this.y = y;
+        /*
+         * Cache the image.
+         */
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = image.createGraphics();
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, width, height);
+        g.setColor(new Color(224, 67, 26));
+        g.fillRect(1, 1, width - 2, height - 2);
+    }
+
+    public myActor(myWorld world) {
+        this.m = world;
+        this.x = 100;
+        this.y = BOTTOM_SCREEN - 50;
         /*
          * Cache the image.
          */
