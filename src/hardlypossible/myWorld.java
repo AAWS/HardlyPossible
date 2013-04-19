@@ -12,6 +12,7 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,10 +37,16 @@ public class myWorld extends Environment {
     private final Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
     private SoundThread t;
     public double scrollY;
+    public int attempts;
+    private boolean hasToReset = false;
 
     public myWorld(Image background) {
         super(background);
         startTimer(0, 10L);
+    }
+
+    public void reset() {
+        hasToReset = true;
     }
 
     public void addObjectToWorld(Object obj) {
@@ -108,8 +115,20 @@ public class myWorld extends Environment {
         }
         scrollY = 0;
 
-        for (myActable a : inActing) {
-            a.act();
+        try {
+            for (myActable a : inActing) {
+                a.act();
+            }
+        } catch (ConcurrentModificationException e) {
+        }
+        if (hasToReset) {
+            inPaintable.clear();
+            inScrolling.clear();
+            inActing.clear();
+            inIntersectable.clear();
+            stopSound();
+            hasToReset = false;
+            levelManager.buildCurrent();
         }
     }
 

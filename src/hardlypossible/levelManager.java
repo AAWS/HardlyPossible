@@ -12,6 +12,7 @@ public class levelManager {
 
     private static myWorld world;
     private static final int BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height - 250;
+    private static int current = 0;
 
     /* HOW TO BUILD A LEVEL.
      * 
@@ -44,20 +45,53 @@ public class levelManager {
         world = main;
     }
 
+    public static void build() {
+        world.addObjectToWorld(new myText(world, myText.TextType.ATTEMPTS, java.awt.Toolkit.getDefaultToolkit().getScreenSize().width / 2 - 100, 50));
+    }
+
+    public static void reset() {
+        world.reset();
+    }
+
+    public static void buildCurrent() {
+        switch (current) {
+            case 1:
+                buildLevelOne();
+                break;
+            case 2:
+                buildLevelTwo();
+                break;
+            case 3:
+                buildLevelThree();
+                break;
+            case 4:
+                buildLevelFour();
+                break;
+        }
+    }
+
     /*
      * Level one by Malcolm.
      */
     public static void buildLevelOne() {
+        build();
+        current = 1;
         world.setBackground(1);
         world.setSound(1);
 
-
+        world.addObjectToWorld(new myActor(world));
+        for (int x = 0; x < 10000; x += 50) {
+            world.addObjectToWorld(new mySurface(x, BOTTOM_SCREEN, true));
+        }
+        world.addObjectToWorld(new mySpike(1000, BOTTOM_SCREEN - 50));
     }
 
     /*
      * Level two by Paul
      */
     public static void buildLevelTwo() {
+        build();
+        current = 2;
         world.setBackground(2);
         world.setSound(2);
     }
@@ -66,6 +100,8 @@ public class levelManager {
      * Level three by Sabin
      */
     public static void buildLevelThree() {
+        build();
+        current = 3;
         world.setBackground(3);
         world.setSound(3);
     }
@@ -74,6 +110,8 @@ public class levelManager {
      * Level four by Jordan
      */
     public static void buildLevelFour() {
+        build();
+        current = 4;
         world.setBackground(4);
         world.setSound(4);
     }

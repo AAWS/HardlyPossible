@@ -12,6 +12,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.util.ConcurrentModificationException;
 
 /**
  *
@@ -81,6 +82,9 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         }
 
         hitSpike();
+        if (dead) {
+            return;
+        }
 
         /*
          * Move.
@@ -193,23 +197,27 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         Rectangle2D actor = new Rectangle();
         actor.setRect((int) x, (int) y + 3, width, height);
 
-        for (myIntersectable i : myWorld.inIntersectable) {
-            /*
-             * Loop through world objects and check for those intersectable.
-             */
-            if (!i.equals(this) && i instanceof mySpike) {
+        try {
+            for (myIntersectable i : myWorld.inIntersectable) {
                 /*
-                 * Cast the intersectable object to paintable and create it's polygon.
+                 * Loop through world objects and check for those intersectable.
                  */
-                myPaintable p = (myPaintable) i;
-                int[] xP = new int[]{(int) p.getX(), (int) p.getX() + p.getWidth() / 2, (int) p.getX() + p.getWidth()};
-                int[] yP = new int[]{(int) p.getY() + p.getHeight(), (int) p.getY(), (int) p.getY() + p.getHeight()};
-                Polygon other = new Polygon(xP, yP, 3);
+                if (!i.equals(this) && i instanceof mySpike) {
+                    /*
+                     * Cast the intersectable object to paintable and create it's polygon.
+                     */
+                    myPaintable p = (myPaintable) i;
+                    int[] xP = new int[]{(int) p.getX(), (int) p.getX() + p.getWidth() / 2, (int) p.getX() + p.getWidth()};
+                    int[] yP = new int[]{(int) p.getY() + p.getHeight(), (int) p.getY(), (int) p.getY() + p.getHeight()};
+                    Polygon other = new Polygon(xP, yP, 3);
 
-                if (other.intersects(actor)) {
-                    die();
+                    if (other.intersects(actor)) {
+                        die();
+                    }
                 }
             }
+        } catch (ConcurrentModificationException e) {
+            die();
         }
     }
 
@@ -278,6 +286,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
 
     private void die() {
         dead = true;
-        System.exit(-1);
+        m.attempts++;
+        levelManager.reset();
     }
 }
