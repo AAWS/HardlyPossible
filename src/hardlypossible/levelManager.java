@@ -11,8 +11,8 @@ package hardlypossible;
 public class levelManager {
 
     private static myWorld world;
-    private static final int BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height - 250;
-    private static int current = 0;
+    private static final int BOTTOM_SCREEN = (int) (java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 0.9);
+    private static int current = 1;
 
     /* HOW TO BUILD A LEVEL.
      * 
@@ -54,20 +54,7 @@ public class levelManager {
     }
 
     public static void buildCurrent() {
-        switch (current) {
-            case 1:
-                buildLevelOne();
-                break;
-            case 2:
-                buildLevelTwo();
-                break;
-            case 3:
-                buildLevelThree();
-                break;
-            case 4:
-                buildLevelFour();
-                break;
-        }
+        new buildThread(current).start();
     }
 
     /*
@@ -76,14 +63,27 @@ public class levelManager {
     public static void buildLevelOne() {
         build();
         current = 1;
-        world.setBackground(1);
+        world.setBackground(3);
         world.setSound(1);
-
         world.addObjectToWorld(new myActor(world));
-        for (int x = 0; x < 10000; x += 50) {
+        for (int x = 0; x < 100000; x += 50) {
             world.addObjectToWorld(new mySurface(x, BOTTOM_SCREEN, true));
         }
-        world.addObjectToWorld(new mySpike(1000, BOTTOM_SCREEN - 50));
+        
+        for (int x = 0; x < 100000; x += 50) {
+            world.addObjectToWorld(new mySurface(x, BOTTOM_SCREEN-300, true));
+        }
+
+        world.addObjectToWorld(new mySpike(1175, BOTTOM_SCREEN - 50));
+        world.addObjectToWorld(new mySpike(1125, BOTTOM_SCREEN - 50));
+
+        world.addObjectToWorld(new mySpike(2055, BOTTOM_SCREEN - 50));
+
+        world.addObjectToWorld(new myGround(3950, BOTTOM_SCREEN - 50));
+        world.addObjectToWorld(new mySpike(4000, BOTTOM_SCREEN - 50));
+        world.addObjectToWorld(new mySpike(4050, BOTTOM_SCREEN - 50));
+        world.addObjectToWorld(new mySpike(4100, BOTTOM_SCREEN - 50));
+        world.addObjectToWorld(new myGround(4150, BOTTOM_SCREEN - 50));
     }
 
     /*
@@ -114,5 +114,33 @@ public class levelManager {
         current = 4;
         world.setBackground(4);
         world.setSound(4);
+    }
+
+    private static class buildThread extends Thread {
+
+        private int level;
+
+        public buildThread(int level) {
+            this.level = level;
+        }
+
+        @Override
+        public void run() {
+            switch (level) {
+                case 1:
+                    buildLevelOne();
+                    break;
+                case 2:
+                    buildLevelTwo();
+                    break;
+                case 3:
+                    buildLevelThree();
+                    break;
+                case 4:
+                    buildLevelFour();
+                    break;
+            }
+            world.built = true;
+        }
     }
 }

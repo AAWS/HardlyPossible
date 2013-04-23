@@ -26,7 +26,7 @@ public class myText implements myPaintable {
         this.x = x;
         this.y = y;
         if (tracking == TextType.ATTEMPTS) {
-            image = new BufferedImage(200, 60, BufferedImage.TYPE_INT_ARGB);
+            image = new BufferedImage(300, 60, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = image.createGraphics();
             g.setFont(new Font("monospaced", Font.BOLD, 30));
             str = "Attempts: ";

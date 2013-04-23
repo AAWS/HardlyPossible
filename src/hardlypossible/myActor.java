@@ -4,8 +4,7 @@
  */
 package hardlypossible;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import image.ResourceTools;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -23,7 +22,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     private myWorld m;
     private double x, y, ys, rotation;
     private int width = 50, height = 50;
-    private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 8.8, ROTATIONSPEED = 0.055, TOP_SCREEN = 650, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 300;
+    private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 8.8, ROTATIONSPEED = 0.061, TOP_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 3, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 0.8;
     private BufferedImage image;
     private boolean dead;
 
@@ -34,12 +33,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         /*
          * Cache the image.
          */
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = image.createGraphics();
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, width, height);
-        g.setColor(new Color(224, 67, 26));
-        g.fillRect(1, 1, width - 2, height - 2);
+        image = (BufferedImage) ResourceTools.loadImageFromResource("resources/images/actor.jpg");
     }
 
     public myActor(myWorld world) {
@@ -49,12 +43,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         /*
          * Cache the image.
          */
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = image.createGraphics();
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, width, height);
-        g.setColor(new Color(224, 67, 26));
-        g.fillRect(1, 1, width - 2, height - 2);
+        image = (BufferedImage) ResourceTools.loadImageFromResource("resources/images/actor.jpg");
     }
 
     @Override
@@ -63,8 +52,14 @@ public class myActor implements myPaintable, myIntersectable, myActable {
             /*
              * Not on ground so add gravity and rotation.
              */
-            if (ys <= MAX_GRAVITY) {
-                ys += GRAVITY;
+            if (MAX_GRAVITY > 0) {
+                if (ys <= MAX_GRAVITY) {
+                    ys += GRAVITY;
+                }
+            } else {
+                if (ys > MAX_GRAVITY) {
+                    ys += GRAVITY;
+                }
             }
             rotation += ROTATIONSPEED;
         } else if (onGround() || onBlock()) {
@@ -78,7 +73,11 @@ public class myActor implements myPaintable, myIntersectable, myActable {
          * Jump.
          */
         if (m.isKeyDown("space") && (onGround() || onBlock())) {
-            ys = -JUMPSTR;
+            if (MAX_GRAVITY > 0) {
+                ys = -JUMPSTR;
+            } else {
+                ys = JUMPSTR;
+            }
         }
 
         hitSpike();
@@ -110,7 +109,12 @@ public class myActor implements myPaintable, myIntersectable, myActable {
          * Create a rectangle for comparisons.
          */
         Rectangle actor = new Rectangle();
-        actor.setBounds((int) x, (int) y + 3, width, height);
+        if (MAX_GRAVITY > 0) {
+            actor.setBounds((int) x, (int) y + 3, width, height);
+        } else {
+            actor.setBounds((int) x, (int) y - 3, width, height);
+        }
+
         for (myIntersectable i : myWorld.inIntersectable) {
             /*
              * Loop through world objects and check for those intersectable.
@@ -131,7 +135,11 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                         die();
                         return false;
                     }
-                    y = othery - height;
+                    if (MAX_GRAVITY > 0) {
+                        y = othery - height;
+                    } else {
+                        y = othery + height;
+                    }
                     return true;
                 }
             }
@@ -152,7 +160,11 @@ public class myActor implements myPaintable, myIntersectable, myActable {
          * Create a rectangle for comparisons.
          */
         Rectangle actor = new Rectangle();
-        actor.setBounds((int) x, (int) y + 3, width, height);
+        if (MAX_GRAVITY > 0) {
+            actor.setBounds((int) x, (int) y + 3, width, height);
+        } else {
+            actor.setBounds((int) x, (int) y - 3, width, height);
+        }
         for (myIntersectable i : myWorld.inIntersectable) {
             /*
              * Loop through world objects and check for those intersectable.
@@ -170,7 +182,11 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                      */
                     if (((mySurface) p).safe) {
                         double othery = other.getY();
-                        y = othery - height;
+                        if (MAX_GRAVITY > 0) {
+                            y = othery - height;
+                        } else {
+                            y = othery + height/2;
+                        }
                         return true;
                     } else {
                         die();
@@ -195,7 +211,12 @@ public class myActor implements myPaintable, myIntersectable, myActable {
          * Create a rectangle for comparisons.
          */
         Rectangle2D actor = new Rectangle();
-        actor.setRect((int) x, (int) y + 3, width, height);
+
+        if (MAX_GRAVITY > 0) {
+            actor.setRect((int) x, (int) y + 3, width, height);
+        } else {
+            actor.setRect((int) x, (int) y - 3, width, height);
+        }
 
         try {
             for (myIntersectable i : myWorld.inIntersectable) {

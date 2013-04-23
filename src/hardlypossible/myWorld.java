@@ -38,6 +38,7 @@ public class myWorld extends Environment {
     private SoundThread t;
     public double scrollY;
     public int attempts;
+    public boolean built;
     private boolean hasToReset = false;
 
     public myWorld(Image background) {
@@ -82,7 +83,7 @@ public class myWorld extends Environment {
         levelManager.initialize(this);
 
         // Change this to build other levels.
-        levelManager.buildLevelOne();
+        levelManager.buildCurrent();
     }
 
     public void setBackground(int background) {
@@ -110,13 +111,23 @@ public class myWorld extends Environment {
 
     @Override
     public void timerTaskHandler() {
-        for (myScrollable a : inScrolling) {
-            a.scroll(SCROLLSPEED, scrollY);
+        if (!built) {
+            return;
         }
-        scrollY = 0;
-
         try {
+            for (myScrollable a : inScrolling) {
+                if (!built) {
+                    return;
+                }
+                a.scroll(SCROLLSPEED, scrollY);
+            }
+
+            scrollY = 0;
+
             for (myActable a : inActing) {
+                if (!built) {
+                    return;
+                }
                 a.act();
             }
         } catch (ConcurrentModificationException e) {
@@ -329,10 +340,19 @@ public class myWorld extends Environment {
 
     @Override
     public void paintEnvironment(Graphics graphics) {
-        for (myPaintable p : inPaintable) {
-            if (p.getX() + p.getWidth() > 0 && p.getX() + p.getWidth() < screenSize.width && p.getY() + p.getHeight() > 0 && p.getY() + p.getHeight() < screenSize.height) {
-                graphics.drawImage(p.paint(), (int) p.getX(), (int) p.getY(), null);
+        if (!built) {
+            return;
+        }
+        try {
+            for (myPaintable p : inPaintable) {
+                if (!built) {
+                    return;
+                }
+                if (p.getX() + p.getWidth() > 0 && p.getX() + p.getWidth() < screenSize.width && p.getY() + p.getHeight() > 0 && p.getY() + p.getHeight() < screenSize.height) {
+                    graphics.drawImage(p.paint(), (int) p.getX(), (int) p.getY(), null);
+                }
             }
+        } catch (ConcurrentModificationException exc) {
         }
     }
 
