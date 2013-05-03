@@ -40,16 +40,6 @@ public class mySurface implements myScrollable, myPaintable, myIntersectable, my
 
     @Override
     public void addedToWorld(myWorld world) {
-        List<myPaintable> inPaintable = new ArrayList(world.inPaintable);
-        Rectangle actor = new Rectangle();
-        actor.setBounds((int) getX(), (int) getY(), (int) getWidth(), (int) getHeight());
-        for (myPaintable m : inPaintable) {
-            Rectangle other = new Rectangle();
-            other.setBounds((int) m.getX(), (int) m.getY(), m.getWidth(), m.getHeight());
-            if (actor.intersects(other) && m != this) {
-                world.removeObjectFromWorld(this);
-            }
-        }
     }
 
     @Override

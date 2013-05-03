@@ -56,6 +56,10 @@ public class levelManager {
     public static void buildCurrent() {
         new buildThread(current).start();
     }
+    
+    private static void add(Object o) {
+        world.addObjectToWorld(o);
+    }
 
     /*
      * Level one by Malcolm.
@@ -69,61 +73,8 @@ public class levelManager {
         for (int x = 0; x < 100000; x += 50) {
             world.addObjectToWorld(new mySurface(x, BOTTOM_SCREEN, true));
         }
-
-        world.addObjectToWorld(new mySpike(950, BOTTOM_SCREEN - 50));
-        world.addObjectToWorld(new mySpike(1000, BOTTOM_SCREEN - 50));
-        world.addObjectToWorld(new mySpike(1200, BOTTOM_SCREEN - 50));
-        world.addObjectToWorld(new myGround(1600, BOTTOM_SCREEN - 50));
-        world.addObjectToWorld(new myGround(1800, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(1850, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(1900, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(1950, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(2000, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(2050, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(2100, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(2150, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(2200, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(2250, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new mySpike(2100, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new mySpike(2400, BOTTOM_SCREEN - 50));
-        world.addObjectToWorld(new mySpike(2450, BOTTOM_SCREEN - 50));
-
-        world.addObjectToWorld(new myGround(2800, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(2850, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(2900, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(2950, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3000, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3050, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3100, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3150, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3200, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3250, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3300, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3350, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3400, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3450, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(3500, BOTTOM_SCREEN - 100));
-        world.addObjectToWorld(new myGround(2800, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(2850, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(2900, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(2950, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(3000, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(3050, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(3100, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(3150, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(3200, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(3250, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(3300, BOTTOM_SCREEN - 200));
-
-        world.addObjectToWorld(new mySurface(3350, BOTTOM_SCREEN, false));
-
-        world.addObjectToWorld(new myGround(3725, BOTTOM_SCREEN - 150));
-        world.addObjectToWorld(new myGround(3950, BOTTOM_SCREEN - 200));
-        world.addObjectToWorld(new myGround(4175, BOTTOM_SCREEN - 250));
-        world.addObjectToWorld(new myGround(4400, BOTTOM_SCREEN - 300));
-        world.addObjectToWorld(new myGround(4625, BOTTOM_SCREEN - 350));
-        world.addObjectToWorld(new myGround(4850, BOTTOM_SCREEN - 400));
-        world.addObjectToWorld(new myGround(5075, BOTTOM_SCREEN - 450));
+        add(new mySurface(1000, BOTTOM_SCREEN, false));
+        add(new mySurface(1050, BOTTOM_SCREEN, false));
     }
 
     /*

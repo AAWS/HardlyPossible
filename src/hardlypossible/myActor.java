@@ -59,7 +59,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
 
     @Override
     public void act() {
-        if (!onGround(0) && !onBlock(0)) {
+        if (!onGround(0) && onBlock(0) == null) {
             /*
              * Not on ground so add gravity and rotation.
              */
@@ -73,7 +73,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                 }
             }
             rotation += ROTATIONSPEED;
-        } else if (onGround(0) || onBlock(0)) {
+        } else if (onGround(0) || onBlock(0) != null) {
             /*
              * On ground so zero rotation and vertical velocity.
              */
@@ -83,15 +83,15 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         /*
          * Jump.
          */
-        if (m.isKeyDown("space") && (onGround(0) || onBlock(0)) && !auto) {
+        if (m.isKeyDown("space") && (onGround(0) || onBlock(0) != null) && !auto) {
             jump();
         }
 
         /*
          * LOGIC.
          */
-        if (auto && (onGround(0) || onBlock(0))) {
-            if ((onGround(129, -5) && !onGround(20, -50)) || hitSpike(20) || (onGround(129, -70) && !onGround(20, -70)) || (onGround(0) && !onGround(50, 50))) {
+        if (auto && (onGround(0) || onBlock(0) != null) && m.isKeyDown("space")) {
+            if ((onGround(129, -5) && !onGround(20, -50)) || hitSpike(20) || (onGround(129, -70) && !onGround(20, -70)) || (onGround(0) && !onGround(50, 50)) || (onBlock(40) != null && !onBlock(40).safe)) {
                 jump();
             }
         }
@@ -178,9 +178,9 @@ public class myActor implements myPaintable, myIntersectable, myActable {
      *
      * @return Whether or not the actor is on a ground block.
      */
-    private boolean onBlock(int xoff) {
+    private mySurface onBlock(int xoff) {
         if (dead) {
-            return false;
+            return null;
         }
         /*
          * Create a rectangle for comparisons.
@@ -191,6 +191,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         } else {
             actor.setBounds((int) x + xoff, (int) y - 3, width, height);
         }
+        mySurface inter = null;
         for (myIntersectable i : myWorld.inIntersectable) {
             /*
              * Loop through world objects and check for those intersectable.
@@ -214,16 +215,16 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                             } else {
                                 y = othery + height / 2;
                             }
-                            return true;
                         } else {
                             die();
-                            return false;
+                            return null;
                         }
                     }
+                    inter = (mySurface) i;
                 }
             }
         }
-        return false;
+        return inter;
     }
 
     /**
@@ -332,9 +333,9 @@ public class myActor implements myPaintable, myIntersectable, myActable {
      *
      * @return Whether or not the actor is on a ground block.
      */
-    private boolean onBlock(int xoff, int yoff) {
+    private mySurface onBlock(int xoff, int yoff) {
         if (dead) {
-            return false;
+            return null;
         }
         /*
          * Create a rectangle for comparisons.
@@ -368,16 +369,19 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                             } else {
                                 y = othery + height / 2;
                             }
-                            return true;
+                            return (mySurface) i;
                         } else {
                             die();
-                            return false;
+                            return null;
                         }
+                    } else {
+                        System.out.println(((mySurface) i).safe);
+                        return (mySurface) i;
                     }
                 }
             }
         }
-        return false;
+        return null;
     }
 
     /**
