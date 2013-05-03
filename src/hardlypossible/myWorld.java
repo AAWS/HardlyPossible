@@ -56,12 +56,28 @@ public class myWorld extends Environment {
         }
         if (obj instanceof myActable) {
             inActing.add((myActable) obj);
+            ((myActable) obj).addedToWorld(this);
         }
         if (obj instanceof myIntersectable) {
             inIntersectable.add((myIntersectable) obj);
         }
         if (obj instanceof myScrollable) {
             inScrolling.add((myScrollable) obj);
+        }
+    }
+
+    public void removeObjectFromWorld(Object obj) {
+        if (obj instanceof myPaintable && inPaintable.contains((myPaintable) obj)) {
+            inPaintable.remove((myPaintable) obj);
+        }
+        if (obj instanceof myActable && inActing.contains((myActable) obj)) {
+            inActing.remove((myActable) obj);
+        }
+        if (obj instanceof myIntersectable && inIntersectable.contains((myIntersectable) obj)) {
+            inIntersectable.remove((myIntersectable) obj);
+        }
+        if (obj instanceof myScrollable && inScrolling.contains((myScrollable) obj)) {
+            inScrolling.remove((myScrollable) obj);
         }
     }
 

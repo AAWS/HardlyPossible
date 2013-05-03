@@ -11,4 +11,6 @@ package hardlypossible;
 public interface myActable {
 
     public void act();
+    
+    public void addedToWorld(myWorld world);
 }
