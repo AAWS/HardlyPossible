@@ -24,12 +24,15 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     private int width = 50, height = 50;
     private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 8.8, ROTATIONSPEED = 0.061, TOP_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 3, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 0.8;
     private BufferedImage image;
-    private boolean dead, auto;
+    private boolean dead, auto, invinsible;
 
     public myActor(myWorld m, double x, double y) {
         this.m = m;
         this.x = x - 3;
-        this.y = y;
+        if (y == 0.0000001) {
+            y = BOTTOM_SCREEN - 50;
+            this.y = y;
+        }
         /*
          * Cache the image.
          */
@@ -37,20 +40,16 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     }
 
     public myActor(myWorld world) {
-        this.m = world;
-        this.x = 100;
-        this.y = BOTTOM_SCREEN - 50;
-        /*
-         * Cache the image.
-         */
-        image = (BufferedImage) ResourceTools.loadImageFromResource("resources/images/actor.jpg");
+        this(world, 100, 0.0000001);
     }
 
-    public myActor(myWorld world, boolean NPC) {
+    public myActor(myWorld world, String id) {
         this.m = world;
         this.x = 100;
         this.y = BOTTOM_SCREEN - 50;
-        this.auto = NPC;
+        id = id.toUpperCase() + "";
+        this.auto = id.contains("NPC");
+        this.invinsible = id.contains("GOD");
         /*
          * Cache the image.
          */
@@ -107,8 +106,8 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         y += ys;
         if (y <= TOP_SCREEN) {
             m.scrollY = -m.SCROLLSPEED / 2;
-        } else if (y >= BOTTOM_SCREEN) {
-            m.scrollY = m.SCROLLSPEED / 2;
+        } else if (y >= BOTTOM_SCREEN - 100) {
+            m.scrollY = m.SCROLLSPEED * 2;
         }
     }
 
@@ -120,6 +119,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         }
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Support Methods">
     /**
      * Determine whether or not the actor is on a ground block.
      *
@@ -150,7 +150,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                 myPaintable p = (myPaintable) i;
                 Rectangle other = new Rectangle();
                 other.setBounds((int) p.getX(), (int) p.getY(), p.getWidth(), p.getHeight());
-                if (actor.intersects(other)) {
+                if (actor.intersects(other) && !((myGround) i).fake) {
                     if (xoff == 0) {
                         /*
                          * Snap to the ground block and return true.
@@ -208,7 +208,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                         /*
                          * Snap to the ground block and return true.
                          */
-                        if (((mySurface) p).safe) {
+                        if (((mySurface) p).safe || invinsible) {
                             double othery = other.getY();
                             if (MAX_GRAVITY > 0) {
                                 y = othery - height;
@@ -305,7 +305,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
                 myPaintable p = (myPaintable) i;
                 Rectangle other = new Rectangle();
                 other.setBounds((int) p.getX(), (int) p.getY(), p.getWidth(), p.getHeight());
-                if (actor.intersects(other)) {
+                if (actor.intersects(other) && !((myGround) i).fake) {
                     if (xoff == 0 && yoff == 0) {
                         /*
                          * Snap to the ground block and return true.
@@ -327,110 +327,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         }
         return false;
     }
-
-    /**
-     * Determine whether or not the actor is on a ground block.
-     *
-     * @return Whether or not the actor is on a ground block.
-     */
-    private mySurface onBlock(int xoff, int yoff) {
-        if (dead) {
-            return null;
-        }
-        /*
-         * Create a rectangle for comparisons.
-         */
-        Rectangle actor = new Rectangle();
-        if (MAX_GRAVITY > 0) {
-            actor.setBounds((int) x + xoff, (int) y + 3 + yoff, width, height);
-        } else {
-            actor.setBounds((int) x + xoff, (int) y - 3 + yoff, width, height);
-        }
-        for (myIntersectable i : myWorld.inIntersectable) {
-            /*
-             * Loop through world objects and check for those intersectable.
-             */
-            if (!i.equals(this) && i instanceof mySurface) {
-                /*
-                 * Cast the intersectable object to paintable and create it's rectangle.
-                 */
-                myPaintable p = (myPaintable) i;
-                Rectangle other = new Rectangle();
-                other.setBounds((int) p.getX(), (int) p.getY(), p.getWidth(), p.getHeight());
-                if (actor.intersects(other)) {
-                    if (xoff == 0 && yoff == 0) {
-                        /*
-                         * Snap to the ground block and return true.
-                         */
-                        if (((mySurface) p).safe) {
-                            double othery = other.getY();
-                            if (MAX_GRAVITY > 0) {
-                                y = othery - height;
-                            } else {
-                                y = othery + height / 2;
-                            }
-                            return (mySurface) i;
-                        } else {
-                            die();
-                            return null;
-                        }
-                    } else {
-                        System.out.println(((mySurface) i).safe);
-                        return (mySurface) i;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Determine whether or not the actor is on a spike.
-     *
-     * @return Whether or not the actor is on a spike.
-     */
-    private boolean hitSpike(int xoff, int yoff) {
-        if (dead) {
-            return false;
-        }
-        /*
-         * Create a rectangle for comparisons.
-         */
-        Rectangle2D actor = new Rectangle();
-
-        if (MAX_GRAVITY > 0) {
-            actor.setRect((int) x + xoff, (int) y + 3 + yoff, width, height);
-        } else {
-            actor.setRect((int) x + xoff, (int) y - 3 + yoff, width, height);
-        }
-
-        try {
-            for (myIntersectable i : myWorld.inIntersectable) {
-                /*
-                 * Loop through world objects and check for those intersectable.
-                 */
-                if (!i.equals(this) && i instanceof mySpike) {
-                    /*
-                     * Cast the intersectable object to paintable and create it's polygon.
-                     */
-                    myPaintable p = (myPaintable) i;
-                    int[] xP = new int[]{(int) p.getX(), (int) p.getX() + p.getWidth() / 2, (int) p.getX() + p.getWidth()};
-                    int[] yP = new int[]{(int) p.getY() + p.getHeight(), (int) p.getY(), (int) p.getY() + p.getHeight()};
-                    Polygon other = new Polygon(xP, yP, 3);
-
-                    if (other.intersects(actor)) {
-                        if (xoff == 0 && yoff == 0) {
-                            die();
-                        }
-                        return true;
-                    }
-                }
-            }
-        } catch (ConcurrentModificationException e) {
-            die();
-        }
-        return false;
-    }
+    //</editor-fold>
 
     @Override
     public BufferedImage paint() {
@@ -496,6 +393,9 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     }
 
     private void die() {
+        if (invinsible) {
+            return;
+        }
         dead = true;
         m.attempts++;
         levelManager.reset();

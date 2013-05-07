@@ -20,15 +20,15 @@ public class mySpike implements myScrollable, myPaintable, myIntersectable {
 
     public mySpike(double x, double y) {
         this.x = x;
-        this.y = y;
+        this.y = y - 50;
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
         g.setColor(new Color(255, 255, 255, 240));
-        int[] xPoints = new int[] { 0, width/2, width };
-        int[] yPoints = new int[] { height, 0, height };
-        
-        int[] xPoints2 = new int[] { 1, width/2, width-1 };
-        int[] yPoints2 = new int[] { height-1, 1, height-1 };
+        int[] xPoints = new int[]{0, width / 2, width};
+        int[] yPoints = new int[]{height, 0, height};
+
+        int[] xPoints2 = new int[]{1, width / 2, width - 1};
+        int[] yPoints2 = new int[]{height - 1, 1, height - 1};
         g.fillPolygon(xPoints, yPoints, 3);
         g.setColor(new Color(0, 0, 0, 250));
         g.fillPolygon(xPoints2, yPoints2, 3);

@@ -4,6 +4,8 @@
  */
 package hardlypossible;
 
+import java.awt.Point;
+
 /**
  *
  * @author Jordan
@@ -56,25 +58,71 @@ public class levelManager {
     public static void buildCurrent() {
         new buildThread(current).start();
     }
-    
+
     private static void add(Object o) {
         world.addObjectToWorld(o);
     }
-
     /*
      * Level one by Malcolm.
      */
+
     public static void buildLevelOne() {
         build();
         current = 1;
-        world.setBackground(3);
-        world.setSound(1);
-        world.addObjectToWorld(new myActor(world, true));
-        for (int x = 0; x < 100000; x += 50) {
+        world.setBackground(4);
+        world.setSound(4);
+        world.addObjectToWorld(new myActor(world, "NPCGOD"));
+        for (int x = 50; x < 57500; x += 50) {
             world.addObjectToWorld(new mySurface(x, BOTTOM_SCREEN, true));
         }
-        add(new mySurface(1000, BOTTOM_SCREEN, false));
-        add(new mySurface(1050, BOTTOM_SCREEN, false));
+
+        add(new myGround(4100, BOTTOM_SCREEN));
+        add(new myGround(4350, BOTTOM_SCREEN - 50));
+        add(new myGround(4500, BOTTOM_SCREEN));
+        Point p = buildStairs(4750, BOTTOM_SCREEN - 50, 10);
+        Point po = buildPlatform(p.x, p.y, 10);
+        add(new mySpike(po.x - (50 * 5), p.y - 50));
+        Point pop = buildSpikestrip(po.x + (int) (50 * 2.5), BOTTOM_SCREEN, 3);
+        Point popo = buildSpikestrip(pop.x + (50 * 3), BOTTOM_SCREEN, 3);
+        add(new myGround(popo.x + (50 * 4), BOTTOM_SCREEN));
+        Point popop = buildPlatform(popo.x + (50 * 4), BOTTOM_SCREEN - 50, 4);
+        buildPlatform(popo.x + (50 * 4), BOTTOM_SCREEN - (50 * 3), 4);
+        Point popopo = buildStairs(popop.x, popop.y, 5);
+        buildPlatform(popopo.x + 50, popopo.y, 3);
+        add(new mySpike(popopo.x + 150, popopo.y - 50));
+    }
+
+    private static Point buildStairs(int start_x, int start_y, int size) {
+        int lastx = start_x, lasty = start_y;
+        for (int a = 0; a < size; a++) {
+            add(new myGround(start_x + (250 * a), start_y - (50 * a)));
+            add(new mySurface(start_x + (250 * a), BOTTOM_SCREEN, false));
+            add(new mySurface(start_x + (250 * a) + 50, BOTTOM_SCREEN, false));
+            add(new mySurface(start_x + (250 * a) + 100, BOTTOM_SCREEN, false));
+            add(new mySurface(start_x + (250 * a) + 150, BOTTOM_SCREEN, false));
+            add(new mySurface(start_x + (250 * a) + 200, BOTTOM_SCREEN, false));
+            lastx = start_x + (250 * a);
+            lasty = start_y - (50 * a);
+        }
+        return new Point(lastx, lasty);
+    }
+
+    private static Point buildPlatform(int start_x, int start_y, int length) {
+        int original = start_x;
+        while (start_x < original + length * 50) {
+            add(new myGround(start_x, start_y));
+            start_x += 50;
+        }
+        return new Point(start_x, start_y);
+    }
+
+    private static Point buildSpikestrip(int start_x, int start_y, int length) {
+        int original = start_x;
+        while (start_x < original + length * 50) {
+            add(new mySpike(start_x, start_y));
+            start_x += 50;
+        }
+        return new Point(start_x, start_y);
     }
 
     /*
@@ -130,6 +178,8 @@ public class levelManager {
                 case 4:
                     buildLevelFour();
                     break;
+            }
+            for (int delay = 0; delay < 100000; delay++) {
             }
             world.built = true;
         }

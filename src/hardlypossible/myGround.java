@@ -16,11 +16,17 @@ public class myGround implements myScrollable, myPaintable, myIntersectable {
 
     private double x, y;
     private int width = 50, height = 50;
+    public boolean fake;
     private BufferedImage image;
 
     public myGround(double x, double y) {
+        this(x, y, false);
+    }
+
+    public myGround(double x, double y, boolean trick) {
         this.x = x;
-        this.y = y;
+        this.y = y - 50;
+        this.fake = trick;
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.createGraphics();
         g.setColor(new Color(255, 255, 255, 240));
