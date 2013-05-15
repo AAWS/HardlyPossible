@@ -5,8 +5,11 @@
 package hardlypossible;
 
 import image.ResourceTools;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.Transparency;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
@@ -48,8 +51,8 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         this.x = 100;
         this.y = BOTTOM_SCREEN - 50;
         id = id.toUpperCase() + "";
-        this.auto = id.contains("NPC");
-        this.invinsible = id.contains("GOD");
+        this.auto = id.contains("NPC") || id.contains("AUTO");
+        this.invinsible = id.contains("GOD") || id.contains("INVINCIBLE");
         /*
          * Cache the image.
          */
@@ -331,7 +334,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
 
     @Override
     public BufferedImage paint() {
-        return rotate(image, getRotation());
+        return rotate(image, getRotation(), ((Graphics2D) image.getGraphics()).getDeviceConfiguration().getDevice().getDefaultConfiguration());
     }
 
     /**
@@ -341,7 +344,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
      * @param degrees Degrees to rotate
      * @return The rotated image
      */
-    public BufferedImage rotate(BufferedImage timg, double degrees) {
+    public BufferedImage tilt(BufferedImage timg, double degrees) {
         AffineTransform xform = new AffineTransform();
 
         xform.setToTranslation(0.5 * timg.getWidth(), 0.5 * timg.getHeight());
@@ -351,6 +354,19 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         AffineTransformOp op = new AffineTransformOp(xform, AffineTransformOp.TYPE_BILINEAR);
 
         return op.filter(timg, null);
+    }
+
+    public static BufferedImage rotate(BufferedImage image, double angle, GraphicsConfiguration gc) {
+        double sin = Math.abs(Math.sin(angle)), cos = Math.abs(Math.cos(angle));
+        int w = image.getWidth(), h = image.getHeight();
+        int neww = (int) Math.floor(w * cos + h * sin), newh = (int) Math.floor(h * cos + w * sin);
+
+        BufferedImage result = gc.createCompatibleImage(neww, newh, Transparency.TRANSLUCENT);
+        Graphics2D g = result.createGraphics();
+        g.translate((neww - w) / 4, (newh - h) / 4);
+        g.rotate(angle, w / 2, h / 2);
+        g.drawRenderedImage(image, null);
+        return result;
     }
 
     /**

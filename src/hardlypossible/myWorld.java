@@ -11,16 +11,16 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.JavaSoundAudioDevice;
-import javazoom.jl.player.Player;
+import javazoom.jl.player.advanced.PlaybackEvent;
 
 /**
  *
@@ -35,11 +35,13 @@ public class myWorld extends Environment {
     private static Set<String> keysDown = new HashSet<>();
     public final double SCROLLSPEED = 5.3;
     private final Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-    private SoundThread t;
+    public JSound jsound;
     public double scrollY;
     public int attempts;
+    private int position = 0;
     public boolean built;
     private boolean hasToReset = false;
+    boolean building = false;
 
     public myWorld(Image background) {
         super(background);
@@ -81,17 +83,13 @@ public class myWorld extends Environment {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    public void stopSound() {
-        if (t != null && t.isAlive()) {
-            t.stop();
-        }
-    }
-
     public void setSound(int track) {
-        stopSound();
-        t = new SoundThread(track);
-        t.play();
+        if (jsound != null) {
+            jsound.pause();
+        }
+        jsound = new JSound(track);
+
+        jsound.play();
     }
 
     @Override
@@ -103,7 +101,7 @@ public class myWorld extends Environment {
     }
 
     public void setBackground(int background) {
-        Image bg = null;
+        Image bg;
         switch (background) {
             case 1:
                 bg = ResourceTools.loadImageFromResource("resources/images/background.jpg");
@@ -153,7 +151,10 @@ public class myWorld extends Environment {
             inScrolling.clear();
             inActing.clear();
             inIntersectable.clear();
-            stopSound();
+            for (MouseListener ml : this.getMouseListeners()) {
+                this.removeMouseListener(ml);
+            }
+            jsound.pause();
             hasToReset = false;
             levelManager.buildCurrent();
         }
@@ -179,7 +180,10 @@ public class myWorld extends Environment {
         } else {
             keysDown.add(getKeyText(e.getKeyCode()));
         }
-        if (getKeyText(e.getKeyCode()).toLowerCase().equals("escape")) {
+        if (isKeyDown("escape") && levelManager.current > 0) {
+            levelManager.toggle();
+        }
+        if (isKeyDown("q") || (isKeyDown("escape") && isKeyDown("shift"))) {
             System.exit(1);
         }
     }
@@ -356,14 +360,8 @@ public class myWorld extends Environment {
 
     @Override
     public void paintEnvironment(Graphics graphics) {
-        if (!built) {
-            return;
-        }
         try {
             for (myPaintable p : inPaintable) {
-                if (!built) {
-                    return;
-                }
                 if (p.getX() + p.getWidth() > 0 && p.getX() + p.getWidth() < screenSize.width && p.getY() + p.getHeight() > 0 && p.getY() + p.getHeight() < screenSize.height) {
                     graphics.drawImage(p.paint(), (int) p.getX(), (int) p.getY(), null);
                 }
@@ -372,17 +370,17 @@ public class myWorld extends Environment {
         }
     }
 
-    public class SoundThread extends Thread {
+    public class JSound extends JPlayer.PlaybackListener implements Runnable {
 
-        private String slug = "soundtrack";
-        private Player p;
+        private String filePath, slug = "soundthread";
+        private JPlayer player;
+        private Thread playerThread;
 
-        public SoundThread(int level) {
-            set(level);
-        }
-
-        public void set(int level) {
+        private void set(int level) {
             switch (level) {
+                case 0:
+                    slug = "menutrack";
+                    break;
                 case 1:
                     slug = "soundtrack";
                     break;
@@ -392,17 +390,68 @@ public class myWorld extends Environment {
             }
         }
 
+        public JSound(int level) {
+            set(level);
+            this.filePath = "src/resources/sounds/" + slug + ".mp3";
+        }
+
+        public void pause() {
+            this.player.pause();
+
+            try {
+                this.playerThread.stop();
+            } catch (Exception e) {
+            }
+            this.playerThread = null;
+        }
+
+        public void pauseToggle() {
+            if (this.player.isPaused == true) {
+                this.play();
+            } else {
+                this.pause();
+            }
+        }
+
         public void play() {
-            start();
+            if (this.player == null) {
+                this.playerInitialize();
+            }
+
+            this.playerThread = new Thread(this, "AudioPlayerThread");
+
+            this.playerThread.start();
+        }
+
+        private void playerInitialize() {
+            try {
+                String urlAsString =
+                        "file:///"
+                        + new java.io.File(".").getCanonicalPath()
+                        + "/"
+                        + this.filePath;
+
+                this.player = new JPlayer(
+                        new URL(urlAsString),
+                        this);
+            } catch (IOException | JavaLayerException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        // PlaybackListener members
+        public void playbackStarted(PlaybackEvent playbackEvent) {
+        }
+
+        public void playbackFinished(PlaybackEvent playbackEvent) {
         }
 
         @Override
         public void run() {
             try {
-                p = new Player(ResourceTools.getResourceAsStream("resources/sounds/" + slug + ".mp3"), new JavaSoundAudioDevice());
-                p.play();
+                this.player.resume();
             } catch (JavaLayerException ex) {
-                Logger.getLogger(myWorld.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
     }
