@@ -12,6 +12,7 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import javazoom.jl.player.advanced.PlaybackEvent;
  */
 public class myWorld extends Environment {
 
+    boolean inLevelView = true;
+    int levelFactor = 3;
     public static List<myPaintable> inPaintable = new ArrayList<>();
     public static List<myScrollable> inScrolling = new ArrayList<>();
     public static List<myActable> inActing = new ArrayList<>();
@@ -185,6 +188,12 @@ public class myWorld extends Environment {
         }
         if (isKeyDown("q") || (isKeyDown("escape") && isKeyDown("shift"))) {
             System.exit(1);
+        }
+        if (isKeyDown("p")) {
+            inLevelView = !inLevelView;
+        }
+        if(isKeyDown("m")) {
+            levelManager.set(0);
         }
     }
 
@@ -363,7 +372,12 @@ public class myWorld extends Environment {
         try {
             for (myPaintable p : inPaintable) {
                 if (p.getX() + p.getWidth() > 0 && p.getX() + p.getWidth() < screenSize.width && p.getY() + p.getHeight() > 0 && p.getY() + p.getHeight() < screenSize.height) {
-                    graphics.drawImage(p.paint(), (int) p.getX(), (int) p.getY(), null);
+                    if (!inLevelView) {
+                        BufferedImage img = p.paint();
+                        graphics.drawImage(img.getScaledInstance(img.getWidth() / levelFactor, img.getHeight() / levelFactor, 1), (int) p.getX(), (int) p.getY(), null);
+                    } else {
+                        graphics.drawImage(p.paint(), (int) p.getX(), (int) p.getY(), null);
+                    }
                 }
             }
         } catch (ConcurrentModificationException exc) {
@@ -435,7 +449,6 @@ public class myWorld extends Environment {
                         new URL(urlAsString),
                         this);
             } catch (IOException | JavaLayerException ex) {
-                ex.printStackTrace();
             }
         }
 
@@ -451,7 +464,6 @@ public class myWorld extends Environment {
             try {
                 this.player.resume();
             } catch (JavaLayerException ex) {
-                ex.printStackTrace();
             }
         }
     }

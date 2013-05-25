@@ -19,6 +19,10 @@ public class mySpike implements myScrollable, myPaintable, myIntersectable {
     private BufferedImage image;
 
     public mySpike(double x, double y) {
+        if (!levelManager.world.inLevelView) {
+            x -= width;
+            y -= height;
+        }
         this.x = x;
         this.y = y - 50;
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -36,12 +40,12 @@ public class mySpike implements myScrollable, myPaintable, myIntersectable {
 
     @Override
     public double getX() {
-        return x;
+        return levelManager.world.inLevelView ? x : x + getWidth() / levelManager.world.levelFactor;
     }
 
     @Override
     public double getY() {
-        return y;
+        return levelManager.world.inLevelView ? y : y + getHeight() / levelManager.world.levelFactor;
     }
 
     @Override
@@ -56,12 +60,12 @@ public class mySpike implements myScrollable, myPaintable, myIntersectable {
 
     @Override
     public int getWidth() {
-        return width;
+        return levelManager.world.inLevelView ? width : width / levelManager.world.levelFactor;
     }
 
     @Override
     public int getHeight() {
-        return height;
+        return levelManager.world.inLevelView ? height : height / levelManager.world.levelFactor;
     }
 
     @Override

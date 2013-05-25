@@ -24,6 +24,10 @@ public class myGround implements myScrollable, myPaintable, myIntersectable {
     }
 
     public myGround(double x, double y, boolean trick) {
+        if (!levelManager.world.inLevelView) {
+            x -= width;
+            y -= height;
+        }
         this.x = x;
         this.y = y - 50;
         this.fake = trick;
@@ -37,12 +41,12 @@ public class myGround implements myScrollable, myPaintable, myIntersectable {
 
     @Override
     public double getX() {
-        return x;
+        return levelManager.world.inLevelView ? x : x + getWidth() / levelManager.world.levelFactor;
     }
 
     @Override
     public double getY() {
-        return y;
+        return levelManager.world.inLevelView ? y : y + getHeight() / levelManager.world.levelFactor;
     }
 
     @Override
@@ -57,12 +61,12 @@ public class myGround implements myScrollable, myPaintable, myIntersectable {
 
     @Override
     public int getWidth() {
-        return width;
+        return levelManager.world.inLevelView ? width : width / levelManager.world.levelFactor;
     }
 
     @Override
     public int getHeight() {
-        return height;
+        return levelManager.world.inLevelView ? height : height / levelManager.world.levelFactor;
     }
 
     @Override

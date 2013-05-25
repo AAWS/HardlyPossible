@@ -4,6 +4,7 @@
  */
 package hardlypossible;
 
+import image.ResourceTools;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
@@ -13,7 +14,7 @@ import java.awt.image.BufferedImage;
  */
 public class levelManager {
 
-    private static myWorld world;
+    public static myWorld world;
     private static final int BOTTOM_SCREEN = (int) (java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 0.9);
     public static int current = 0;
 
@@ -48,8 +49,13 @@ public class levelManager {
         world = main;
     }
 
-    public static void build() {
-        add(new myButton(world, 50, 50, new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB), Button.Type.TOGGLE));
+    public static void set(int level) {
+        current = level;
+        buildCurrent();
+    }
+
+    private static void build() {
+        add(new myButton(world, 50, 50, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/menu.jpg"), Button.Type.TOGGLE));
         world.addObjectToWorld(new myText(world, myText.TextType.ATTEMPTS, java.awt.Toolkit.getDefaultToolkit().getScreenSize().width / 2 - 100, 50));
     }
 
@@ -74,10 +80,10 @@ public class levelManager {
         current = 0;
         world.setBackground(1);
         world.setSound(0);
-        add(new myButton(world, 300, 300, new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB), Button.Type.LEVEL_1));
-        add(new myButton(world, 500, 300, new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB), Button.Type.LEVEL_2));
-        add(new myButton(world, 700, 300, new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB), Button.Type.LEVEL_3));
-        add(new myButton(world, 900, 300, new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB), Button.Type.LEVEL_4));
+        add(new myButton(world, 350, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl1.jpg"), Button.Type.LEVEL_1));
+        add(new myButton(world, 650, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl2.jpg"), Button.Type.LEVEL_2));
+        add(new myButton(world, 950, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl3.jpg"), Button.Type.LEVEL_3));
+        add(new myButton(world, 1250, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl4.jpg"), Button.Type.LEVEL_4));
     }
 
     /*
@@ -86,62 +92,78 @@ public class levelManager {
     public static void buildLevelOne() {
         build();
         current = 1;
-        world.setBackground(4);
-        world.setSound(4);
-        world.addObjectToWorld(new myActor(world, "AUTOGOD"));
-        for (int x = 50; x < 57500; x += 50) {
-            world.addObjectToWorld(new mySurface(x, BOTTOM_SCREEN, true));
-        }
+        world.setBackground(1);
+        world.setSound(1);
+    }
 
-        add(new myGround(4100, BOTTOM_SCREEN));
-        add(new myGround(4350, BOTTOM_SCREEN - 50));
-        add(new myGround(4500, BOTTOM_SCREEN));
-        Point p = buildStairs(4750, BOTTOM_SCREEN - 50, 10);
-        Point po = buildPlatform(p.x, p.y, 10);
-        add(new mySpike(po.x - (50 * 5), p.y - 50));
-        Point pop = buildSpikestrip(po.x + (int) (50 * 2.5), BOTTOM_SCREEN, 3);
-        Point popo = buildSpikestrip(pop.x + (50 * 3), BOTTOM_SCREEN, 3);
-        add(new myGround(popo.x + (50 * 4), BOTTOM_SCREEN));
-        Point popop = buildPlatform(popo.x + (50 * 4), BOTTOM_SCREEN - 50, 4);
-        buildPlatform(popo.x + (50 * 4), BOTTOM_SCREEN - (50 * 3), 4);
-        Point popopo = buildStairs(popop.x, popop.y, 5);
-        buildPlatform(popopo.x + 50, popopo.y, 3);
-        add(new mySpike(popopo.x + 150, popopo.y - 50));
-        add(new mySpike(popopo.x + 350, BOTTOM_SCREEN));
-        add(new mySpike(popopo.x + 900, BOTTOM_SCREEN - 50));
-        add(new myGround(popopo.x + 900, BOTTOM_SCREEN));
-        add(new myGround(popopo.x + 850, BOTTOM_SCREEN));
+    private static void buildGround() {
+        if (world.inLevelView) {
+            for (int x = 50; x < 57500; x += 50) {
+                world.addObjectToWorld(new mySurface(x, BOTTOM_SCREEN, true));
+            }
+        } else {
+            for (int x = 50 / world.levelFactor; x < 57500 / world.levelFactor; x += 50 / world.levelFactor) {
+                world.addObjectToWorld(new mySurface(x, BOTTOM_SCREEN, true));
+            }
+        }
     }
 
     private static Point buildStairs(int start_x, int start_y, int size) {
         int lastx = start_x, lasty = start_y;
-        for (int a = 0; a < size; a++) {
-            add(new myGround(start_x + (250 * a), start_y - (50 * a)));
-            add(new mySurface(start_x + (250 * a), BOTTOM_SCREEN, false));
-            add(new mySurface(start_x + (250 * a) + 50, BOTTOM_SCREEN, false));
-            add(new mySurface(start_x + (250 * a) + 100, BOTTOM_SCREEN, false));
-            add(new mySurface(start_x + (250 * a) + 150, BOTTOM_SCREEN, false));
-            add(new mySurface(start_x + (250 * a) + 200, BOTTOM_SCREEN, false));
-            lastx = start_x + (250 * a);
-            lasty = start_y - (50 * a);
+        if (world.inLevelView) {
+            for (int a = 0; a < size; a++) {
+                add(new myGround(start_x + (250 * a), start_y - (50 * a)));
+                add(new mySurface(start_x + (250 * a), BOTTOM_SCREEN, false));
+                add(new mySurface(start_x + (250 * a) + 50, BOTTOM_SCREEN, false));
+                add(new mySurface(start_x + (250 * a) + 100, BOTTOM_SCREEN, false));
+                add(new mySurface(start_x + (250 * a) + 150, BOTTOM_SCREEN, false));
+                add(new mySurface(start_x + (250 * a) + 200, BOTTOM_SCREEN, false));
+                lastx = start_x + (250 * a);
+                lasty = start_y - (50 * a);
+            }
+        } else {
+            for (int a = 0; a < size; a++) {
+                add(new myGround(start_x + (250 / world.levelFactor * a), start_y - (50 / world.levelFactor * a)));
+                add(new mySurface(start_x + (250 / world.levelFactor * a), BOTTOM_SCREEN, false));
+                add(new mySurface(start_x + (250 / world.levelFactor * a) + 50, BOTTOM_SCREEN, false));
+                add(new mySurface(start_x + (250 / world.levelFactor * a) + 100, BOTTOM_SCREEN, false));
+                add(new mySurface(start_x + (250 / world.levelFactor * a) + 150, BOTTOM_SCREEN, false));
+                add(new mySurface(start_x + (250 / world.levelFactor * a) + 200, BOTTOM_SCREEN, false));
+                lastx = start_x + (250 / world.levelFactor * a);
+                lasty = start_y - (50 / world.levelFactor * a);
+            }
         }
         return new Point(lastx, lasty);
     }
 
     private static Point buildPlatform(int start_x, int start_y, int length) {
         int original = start_x;
-        while (start_x < original + length * 50) {
-            add(new myGround(start_x, start_y));
-            start_x += 50;
+        if (world.inLevelView) {
+            while (start_x < original + length * 50) {
+                add(new myGround(start_x, start_y));
+                start_x += 50;
+            }
+        } else {
+            while (start_x < original + (length * 50 / world.levelFactor)) {
+                add(new myGround(start_x, start_y));
+                start_x += 50 / world.levelFactor;
+            }
         }
         return new Point(start_x, start_y);
     }
 
     private static Point buildSpikestrip(int start_x, int start_y, int length) {
         int original = start_x;
-        while (start_x < original + length * 50) {
-            add(new mySpike(start_x, start_y));
-            start_x += 50;
+        if (world.inLevelView) {
+            while (start_x < original + length * 50) {
+                add(new mySpike(start_x, start_y));
+                start_x += 50;
+            }
+        } else {
+            while (start_x < original + (length * 50 / world.levelFactor)) {
+                add(new mySpike(start_x, start_y));
+                start_x += 50 / world.levelFactor;
+            }
         }
         return new Point(start_x, start_y);
     }
@@ -172,8 +194,29 @@ public class levelManager {
     public static void buildLevelFour() {
         build();
         current = 4;
-        world.setBackground(4);
+        world.setBackground(5);
         world.setSound(4);
+        world.addObjectToWorld(new myActor(world));
+        buildGround();
+
+        add(new myGround(4100, BOTTOM_SCREEN));
+        add(new myGround(4350, BOTTOM_SCREEN - 50));
+        add(new myGround(4500, BOTTOM_SCREEN));
+        Point p = buildStairs(4750, BOTTOM_SCREEN - 50, 10);
+        Point po = buildPlatform(p.x, p.y, 10);
+        add(new mySpike(po.x - (50 * 5), p.y - 50));
+        Point pop = buildSpikestrip(po.x + (int) (50 * 2.5), BOTTOM_SCREEN, 3);
+        Point popo = buildSpikestrip(pop.x + (50 * 3), BOTTOM_SCREEN, 3);
+        add(new myGround(popo.x + (50 * 4), BOTTOM_SCREEN));
+        Point popop = buildPlatform(popo.x + (50 * 4), BOTTOM_SCREEN - 50, 4);
+        buildPlatform(popo.x + (50 * 4), BOTTOM_SCREEN - (50 * 3), 4);
+        Point popopo = buildStairs(popop.x, popop.y, 5);
+        buildPlatform(popopo.x + 50, popopo.y, 3);
+        add(new mySpike(popopo.x + 150, popopo.y - 50));
+        add(new mySpike(popopo.x + 350, BOTTOM_SCREEN));
+        add(new mySpike(popopo.x + 900, BOTTOM_SCREEN - 50));
+        add(new myGround(popopo.x + 900, BOTTOM_SCREEN));
+        add(new myGround(popopo.x + 850, BOTTOM_SCREEN));
     }
 
     private static class buildThread extends Thread {
@@ -186,7 +229,9 @@ public class levelManager {
 
         @Override
         public void run() {
-            if(world.building) { return; }
+            if (world.building) {
+                return;
+            }
             world.built = false;
             world.building = true;
             switch (level) {

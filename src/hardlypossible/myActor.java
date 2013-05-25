@@ -61,6 +61,10 @@ public class myActor implements myPaintable, myIntersectable, myActable {
 
     @Override
     public void act() {
+        if (!m.inLevelView) {
+            auto = false;
+            invinsible = false;
+        }
         if (!onGround(0) && onBlock(0) == null) {
             /*
              * Not on ground so add gravity and rotation.
@@ -132,6 +136,9 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         if (dead) {
             return false;
         }
+        if (!m.inLevelView) {
+            xoff /= m.levelFactor;
+        }
         /*
          * Create a rectangle for comparisons.
          */
@@ -184,6 +191,9 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     private mySurface onBlock(int xoff) {
         if (dead) {
             return null;
+        }
+        if (!m.inLevelView) {
+            xoff /= m.levelFactor;
         }
         /*
          * Create a rectangle for comparisons.
@@ -239,6 +249,9 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         if (dead) {
             return false;
         }
+        if (!m.inLevelView) {
+            xoff /= m.levelFactor;
+        }
         /*
          * Create a rectangle for comparisons.
          */
@@ -286,6 +299,10 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     private boolean onGround(int xoff, int yoff) {
         if (dead) {
             return false;
+        }
+        if (!m.inLevelView) {
+            xoff /= m.levelFactor;
+            yoff /= m.levelFactor;
         }
         /*
          * Create a rectangle for comparisons.
@@ -380,12 +397,12 @@ public class myActor implements myPaintable, myIntersectable, myActable {
 
     @Override
     public double getX() {
-        return x;
+        return m.inLevelView ? x : x + getWidth() / m.levelFactor;
     }
 
     @Override
     public double getY() {
-        return y;
+        return m.inLevelView ? y : y + getHeight() / m.levelFactor;
     }
 
     @Override
@@ -400,12 +417,12 @@ public class myActor implements myPaintable, myIntersectable, myActable {
 
     @Override
     public int getWidth() {
-        return width;
+        return m.inLevelView ? width : width / m.levelFactor;
     }
 
     @Override
     public int getHeight() {
-        return height;
+        return m.inLevelView ? height : height / m.levelFactor;
     }
 
     private void die() {

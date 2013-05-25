@@ -24,7 +24,7 @@ public class main {
     }
 
     private static void start(String[] args) {
-        String appName = "The Impossible Game";
+        String appName = "The Hardly Possible Game";
         Image background = ResourceTools.loadImageFromResource("resources/images/background.jpg");
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         background = background.getScaledInstance(screenSize.width, screenSize.height, 1);
