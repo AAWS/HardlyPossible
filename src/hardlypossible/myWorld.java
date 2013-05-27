@@ -31,6 +31,7 @@ public class myWorld extends Environment {
 
     boolean inLevelView = true;
     int levelFactor = 3;
+    public int scrollPosition;
     public static List<myPaintable> inPaintable = new ArrayList<>();
     public static List<myScrollable> inScrolling = new ArrayList<>();
     public static List<myActable> inActing = new ArrayList<>();
@@ -41,7 +42,6 @@ public class myWorld extends Environment {
     public JSound jsound;
     public double scrollY;
     public int attempts;
-    private int position = 0;
     public boolean built;
     private boolean hasToReset = false;
     boolean building = false;
@@ -132,6 +132,7 @@ public class myWorld extends Environment {
             return;
         }
         try {
+            scrollPosition += SCROLLSPEED;
             for (myScrollable a : inScrolling) {
                 if (!built) {
                     return;
@@ -189,10 +190,11 @@ public class myWorld extends Environment {
         if (isKeyDown("q") || (isKeyDown("escape") && isKeyDown("shift"))) {
             System.exit(1);
         }
-        if (isKeyDown("p")) {
+        if (isKeyDown("p") && levelManager.current > 0) {
             inLevelView = !inLevelView;
         }
-        if(isKeyDown("m")) {
+        if (isKeyDown("m") && levelManager.current > 0) {
+            levelManager.reset();
             levelManager.set(0);
         }
     }

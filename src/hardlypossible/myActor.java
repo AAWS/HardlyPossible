@@ -25,9 +25,9 @@ public class myActor implements myPaintable, myIntersectable, myActable {
     private myWorld m;
     private double x, y, ys, rotation;
     private int width = 50, height = 50;
-    private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 8.8, ROTATIONSPEED = 0.061, TOP_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 3, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 0.8;
+    private final double GRAVITY = 0.4, MAX_GRAVITY = 8.9, JUMPSTR = 8.8, ROTATIONSPEED = 0.071, TOP_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 3, BOTTOM_SCREEN = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 0.8;
     private BufferedImage image;
-    private boolean dead, auto, invinsible;
+    private boolean dead, auto, invinsible, invert;
 
     public myActor(myWorld m, double x, double y) {
         this.m = m;
@@ -52,6 +52,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         this.y = BOTTOM_SCREEN - 50;
         id = id.toUpperCase() + "";
         this.auto = id.contains("NPC") || id.contains("AUTO");
+        this.invert = id.contains("INVERT");
         this.invinsible = id.contains("GOD") || id.contains("INVINCIBLE");
         /*
          * Cache the image.
@@ -96,7 +97,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
         /*
          * LOGIC.
          */
-        if (auto && (onGround(0) || onBlock(0) != null) && m.isKeyDown("space")) {
+        if (auto && (onGround(0) || onBlock(0) != null) && (m.isKeyDown("space") || invert)) {
             if ((onGround(129, -5) && !onGround(20, -50)) || hitSpike(20) || (onGround(129, -70) && !onGround(20, -70)) || (onGround(0) && !onGround(50, 50)) || (onBlock(40) != null && !onBlock(40).safe)) {
                 jump();
             }

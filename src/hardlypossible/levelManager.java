@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 public class levelManager {
 
     public static myWorld world;
-    private static final int BOTTOM_SCREEN = (int) (java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 0.9);
+    private static final int BOTTOM_SCREEN = (int) (java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() * 0.9), WIDTH = (int) java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
     public static int current = 0;
 
     /* HOW TO BUILD A LEVEL.
@@ -80,10 +80,11 @@ public class levelManager {
         current = 0;
         world.setBackground(1);
         world.setSound(0);
-        add(new myButton(world, 350, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl1.jpg"), Button.Type.LEVEL_1));
-        add(new myButton(world, 650, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl2.jpg"), Button.Type.LEVEL_2));
-        add(new myButton(world, 950, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl3.jpg"), Button.Type.LEVEL_3));
-        add(new myButton(world, 1250, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl4.jpg"), Button.Type.LEVEL_4));
+        buildDisplay();
+        add(new myButton(world, 150, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl1.jpg"), Button.Type.LEVEL_1));
+        add(new myButton(world, 450, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl2.jpg"), Button.Type.LEVEL_2));
+        add(new myButton(world, WIDTH - (350 + 300), 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl3.jpg"), Button.Type.LEVEL_3));
+        add(new myButton(world, WIDTH - 350, 300, (BufferedImage) ResourceTools.loadImageFromResource("resources/images/lvl4.jpg"), Button.Type.LEVEL_4));
     }
 
     /*
@@ -219,9 +220,28 @@ public class levelManager {
         add(new myGround(popopo.x + 850, BOTTOM_SCREEN));
     }
 
+    /*
+     * Display level
+     */
+    public static void buildDisplay() {
+        world.addObjectToWorld(new myActor(world, "INVERTAUTOGOD"));
+        buildGround();
+
+        add(new myGround(4100, BOTTOM_SCREEN));
+        Point po = buildStairs(4750, BOTTOM_SCREEN - 50, 7);
+        Point popop = buildPlatform(po.x + (50 * 4), BOTTOM_SCREEN - 50, 4);
+        Point popopo = buildStairs(popop.x, popop.y, 5);
+        buildPlatform(popopo.x + 50, popopo.y, 3);
+        add(new mySpike(popopo.x + 150, popopo.y - 50));
+        add(new mySpike(popopo.x + 350, BOTTOM_SCREEN));
+        add(new myGround(popopo.x + 900, BOTTOM_SCREEN));
+        add(new myGround(popopo.x + 850, BOTTOM_SCREEN));
+    }
+
     private static class buildThread extends Thread {
 
         private int level;
+        private boolean alerted = false;
 
         public buildThread(int level) {
             this.level = level;
@@ -237,22 +257,28 @@ public class levelManager {
             switch (level) {
                 case 0:
                     buildMenu();
+                    alerted = true;
                     break;
                 case 1:
                     buildLevelOne();
+                    alerted = true;
                     break;
                 case 2:
                     buildLevelTwo();
+                    alerted = true;
                     break;
                 case 3:
                     buildLevelThree();
+                    alerted = true;
                     break;
                 case 4:
                     buildLevelFour();
+                    alerted = true;
                     break;
             }
-            for (int delay = 0; delay < 100000; delay++) {
+            while (!alerted) {
             }
+            alerted = false;
             world.built = true;
             world.building = false;
         }
