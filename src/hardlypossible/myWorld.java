@@ -446,7 +446,6 @@ public class myWorld extends Environment {
                         + new java.io.File(".").getCanonicalPath()
                         + "/"
                         + this.filePath;
-
                 this.player = new JPlayer(
                         new URL(urlAsString),
                         this);
