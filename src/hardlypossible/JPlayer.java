@@ -1,23 +1,24 @@
 package hardlypossible;
 
-import java.net.*;
+
+
+import image.ResourceTools;
 import javazoom.jl.decoder.*;
 import javazoom.jl.player.*;
 
 public class JPlayer {
     // This class is loosely based on javazoom.jl.player.AdvancedPlayer.
 
-    private java.net.URL urlToStreamFrom;
+    private String urlToStreamFrom;
     private Bitstream bitstream;
     private Decoder decoder;
     private AudioDevice audioDevice;
-    private boolean isClosed = false;
     private PlaybackListener listener;
     private int frameIndexCurrent;
     public boolean isPaused;
 
     public JPlayer(
-            URL urlToStreamFrom,
+            String urlToStreamFrom,
             PlaybackListener listener)
             throws JavaLayerException {
         this.urlToStreamFrom = urlToStreamFrom;
@@ -44,8 +45,8 @@ public class JPlayer {
             throws JavaLayerException {
         try {
             this.bitstream = new Bitstream(
-                    this.urlToStreamFrom.openStream());
-        } catch (java.io.IOException ex) {
+                    ResourceTools.getResourceAsStream(urlToStreamFrom));
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -117,7 +118,6 @@ public class JPlayer {
 
     public synchronized void close() {
         if (this.audioDevice != null) {
-            this.isClosed = true;
 
             this.audioDevice.close();
 

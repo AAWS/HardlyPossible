@@ -1,8 +1,10 @@
+package hardlypossible;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package hardlypossible;
+
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -77,6 +79,9 @@ public class myGround implements myScrollable, myPaintable, myIntersectable {
     @Override
     public void scroll(double x_amt, double y_amt) {
         x -= x_amt;
+        if(x <= -100) {
+        	myWorld.getInstance().removeObjectFromWorld(this);
+        }
         y -= y_amt;
     }
 }

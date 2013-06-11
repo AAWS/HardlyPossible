@@ -1,8 +1,10 @@
+package hardlypossible;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package hardlypossible;
+
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -14,15 +16,11 @@ import java.awt.image.BufferedImage;
  */
 public class myText implements myPaintable {
 
-    private TextType tracking;
-    private myWorld world;
     private BufferedImage image;
     private String str, slug;
     private double x, y;
 
     public myText(myWorld world, TextType tracking, double x, double y) {
-        this.tracking = tracking;
-        this.world = world;
         this.x = x;
         this.y = y;
         if (tracking == TextType.ATTEMPTS) {

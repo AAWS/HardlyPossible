@@ -1,8 +1,10 @@
+package hardlypossible;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package hardlypossible;
+
 
 import image.ResourceTools;
 import java.awt.Graphics2D;
@@ -66,6 +68,7 @@ public class myActor implements myPaintable, myIntersectable, myActable {
             auto = false;
             invinsible = false;
         }
+
         if (!onGround(0) && onBlock(0) == null) {
             /*
              * Not on ground so add gravity and rotation.
