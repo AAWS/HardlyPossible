@@ -136,6 +136,29 @@ public class levelManager {
         add(new mySpike(2900, BOTTOM_SCREEN));
         add(new mySpike(2950, BOTTOM_SCREEN));
         add(new mySpike(3000, BOTTOM_SCREEN));
+
+        add(new myGround(3500, BOTTOM_SCREEN));
+        add(new myGround(3550, BOTTOM_SCREEN));
+        add(new mySpike(3600, BOTTOM_SCREEN));
+        add(new mySpike(3650, BOTTOM_SCREEN));
+        add(new mySpike(3700, BOTTOM_SCREEN));
+        add(new mySpike(3750, BOTTOM_SCREEN));
+        add(new myGround(3800, BOTTOM_SCREEN));
+        add(new myGround(3850, BOTTOM_SCREEN));
+
+        add(new mySpike(4200, BOTTOM_SCREEN));
+        add(new mySpike(4250, BOTTOM_SCREEN));
+        add(new mySpike(4300, BOTTOM_SCREEN));
+
+        add(new myGround(4550, BOTTOM_SCREEN));
+        add(new myGround(4600, BOTTOM_SCREEN));
+
+        add(new mySpike(4850, BOTTOM_SCREEN));
+        add(new mySpike(4900, BOTTOM_SCREEN));
+        add(new mySpike(4950, BOTTOM_SCREEN));
+
+        add(new mySpike(5000, BOTTOM_SCREEN));
+        add(new mySpike(5050, BOTTOM_SCREEN));
     }
 
     private static void buildGround() {
